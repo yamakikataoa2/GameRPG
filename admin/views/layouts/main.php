@@ -2,7 +2,7 @@
 
 
 <?php 
-    require_once('class/taikhoan.class.php'); 
+    require_once('models/taikhoan_model.php'); 
 
     $obj = new TaiKhoan(); //tạo đối tượng
     $results = $obj->get_all(); //Lấy dữ liệu của bảng

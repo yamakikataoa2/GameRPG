@@ -1,5 +1,5 @@
 <?php
-class DBC
+class DB
 {
     private static $instance = NULL;
     //Khai báo phương thức static, khi sử dụng phải thông qua tên lớp.

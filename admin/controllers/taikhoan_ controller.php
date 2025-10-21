@@ -1,6 +1,8 @@
 <?php
-// Xây dựng Controller (trong controllers)
+// File: admin/controllers/taikhoan_controller.php
+
 require_once('controllers/base_controller.php');
+// Luôn đảm bảo gọi đúng Model an toàn từ thư mục /models
 require_once('models/taikhoan_model.php');
 
 class TaikhoanController extends BaseController
@@ -10,81 +12,89 @@ class TaikhoanController extends BaseController
         $this->folder = 'taikhoan'; //Tên thư mục của view.
     }
 
+    // Action: Hiển thị danh sách tất cả tài khoản
     public function index()
     {
-        $taikhoan = TaiKhoan::all(); // Lấy tất cả dữ liệu từ model
-        $data = array('taikhoan' => $taikhoan);
-        $this->render('index', $data); // Trả về view cùng với dữ liệu
+        $taikhoans = TaiKhoan::all(); // Lấy tất cả dữ liệu từ model
+        $data = array('taikhoans' => $taikhoans); // Sửa key thành 'taikhoans' cho nhất quán với View
+        $this->render('index', $data);
     }
 
+    // Action: Hiển thị chi tiết một tài khoản
     public function detail()
     {
-        $taikhoan = TaiKhoan::find($_GET['tendangnhap']); // Lấy chi tiết một tài khoản
+        // Sử dụng $_GET['id'] như đã định nghĩa trong routes và view
+        $taikhoan = TaiKhoan::find($_GET['id']);
         $data = array('taikhoan' => $taikhoan);
         $this->render('detail', $data);
     }
 
+    // Action: Hiển thị form để thêm tài khoản mới
     public function add()
     {
-        $this->render('add'); // Trả về view để thêm mới
+        $this->render('add'); // Chỉ cần hiển thị view 'add.php'
     }
 
+    // Action: Xử lý dữ liệu gửi từ form thêm mới
     public function add_submit()
     {
-        // Lấy giá trị từ form, loại bỏ trường 'hoten' không tồn tại
+        // Lấy dữ liệu từ form
         $tendangnhap = isset($_POST['tendangnhap']) ? $_POST['tendangnhap'] : '';
-        $matkhau = isset($_POST['matkhau']) ? $_POST['matkhau'] : '';
+        $matkhau = isset($_POST['matkhau']) ? md5($_POST['matkhau']) : ''; // Mã hóa mật khẩu
         $email = isset($_POST['email']) ? $_POST['email'] : '';
 
-        // Tạo đối tượng TaiKhoan với 3 tham số, không có 'hoten'
+        // Kiểm tra dữ liệu đầu vào cơ bản
+        if (empty($tendangnhap) || empty($matkhau)) {
+            // Có thể thêm thông báo lỗi ở đây (sử dụng session flash)
+            // Tạm thời chuyển hướng về trang thêm mới
+            header('Location: index.php?controller=taikhoan&action=add');
+            return; // Dừng thực thi
+        }
+
+        // Tạo đối tượng TaiKhoan từ model
         $taikhoan = new TaiKhoan($tendangnhap, $matkhau, $email);
         
         // Gọi phương thức save() từ model để lưu vào CSDL
-        $result = $taikhoan->save();
-        if ($result) {
-            echo "<script>alert('Thêm mới thành công!');</script>";
-        } else {
-            echo "<script>alert('Thêm mới không thành công!');</script>";
-        }
+        $taikhoan->save();
         
-        // Chuyển hướng về trang chủ
-        header('Location: index.php?controller=taikhoan');
+        // Chuyển hướng về trang danh sách tài khoản
+        header('Location: index.php?controller=taikhoan&action=index');
     }
 
+    // Action: Hiển thị form để sửa thông tin tài khoản
     public function edit()
     {
-        $taikhoan = TaiKhoan::find($_GET['tendangnhap']); // Tìm tài khoản cần sửa
+        $taikhoan = TaiKhoan::find($_GET['id']); // Tìm tài khoản cần sửa
         $data = array('taikhoan' => $taikhoan);
-        $this->render('edit', $data); // Trả về view để sửa
+        $this->render('edit', $data); // Trả về view 'edit.php' với dữ liệu cũ
     }
 
+    // Action: Xử lý dữ liệu gửi từ form sửa
     public function edit_submit()
     {
-        // Lấy giá trị từ form, loại bỏ trường 'hoten' không tồn tại
+        // Lấy dữ liệu từ form
         $tendangnhap = isset($_POST['tendangnhap']) ? $_POST['tendangnhap'] : '';
-        $matkhau = isset($_POST['matkhau']) ? $_POST['matkhau'] : '';
+        $matkhau = isset($_POST['matkhau']) ? md5($_POST['matkhau']) : ''; // Mã hóa mật khẩu mới
         $email = isset($_POST['email']) ? $_POST['email'] : '';
 
-        // Tạo đối tượng TaiKhoan với 3 tham số, không có 'hoten'
+        // Tạo đối tượng TaiKhoan
         $taikhoan = new TaiKhoan($tendangnhap, $matkhau, $email);
 
         // Gọi phương thức update() từ model
-        $result = $taikhoan->update();
-        if ($result) {
-            echo "<script>alert('Cập nhật thành công!');</script>";
-        } else {
-            echo "<script>alert('Cập nhật không thành công!');</script>";
-        }
+        $taikhoan->update();
         
-        // Chuyển hướng về trang chủ
-        header('Location: index.php?controller=taikhoan');
+        // Chuyển hướng về trang danh sách
+        header('Location: index.php?controller=taikhoan&action=index');
     }
 
+    // Action: Xóa một tài khoản
     public function del()
     {
         // Gọi phương thức delete() từ model
-        TaiKhoan::delete($_GET['tendangnhap']);
-        // Chuyển hướng về trang chủ
-        header('Location: index.php?controller=taikhoan');
+        TaiKhoan::delete($_GET['id']);
+        
+        // Chuyển hướng về trang danh sách
+        header('Location: index.php?controller=taikhoan&action=index');
     }
 }
+?>
