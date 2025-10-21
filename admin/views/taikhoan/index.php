@@ -12,14 +12,14 @@
         <?php foreach ($taikhoans as $taikhoan) { ?>
         <tr>
             <td>
-                <a href="index.php?controller=taikhoan&action=edit&id=<?php echo $taikhoan->tendangnhap ?>">Sửa</a> |
-                <a href="index.php?controller=taikhoan&action=del&id=<?php echo $taikhoan->tendangnhap ?>" onclick="return confirm('Bạn chắc chắn muốn xóa?');">Xóa</a>
+                <a href="index.php?controller=taikhoan&action=edit&id=<?= $taikhoan->tendangnhap ?>">Sửa</a> |
+                <a href="index.php?controller=taikhoan&action=del&id=<?= $taikhoan->tendangnhap ?>" onclick="return confirm('Bạn chắc chắn muốn xóa?');">Xóa</a>
             </td>
             <td>
-                <a href="index.php?controller=taikhoan&action=detail&id=<?php echo $taikhoan->tendangnhap ?>"><?php echo $taikhoan->tendangnhap ?></a>
+                <a href="index.php?controller=taikhoan&action=detail&id=<?= $taikhoan->tendangnhap ?>"><?= $taikhoan->tendangnhap ?></a>
             </td>
-            <td><?php echo $taikhoan->matkhau ?></td>
-            <td><?php echo $taikhoan->email ?></td>
+            <td><?= $taikhoan->matkhau ?></td>
+            <td><?= $taikhoan->email ?></td>
         </tr>
         <?php } ?>
     </tbody>

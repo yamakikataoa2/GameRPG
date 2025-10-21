@@ -2,7 +2,6 @@
 class DB
 {
     private static $instance = NULL;
-    //Khai báo phương thức static, khi sử dụng phải thông qua tên lớp.
     public static function getInstance()
     {
         if (!isset(self::$instance)) {
